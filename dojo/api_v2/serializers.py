@@ -494,7 +494,7 @@ class ScanSerializer(serializers.ModelSerializer):
 
 
 class ImportScanSerializer(TaggitSerializer, serializers.Serializer):
-    scan_date = serializers.DateField(default=datetime.date.today)
+    scan_date = serializers.DateTimeField(default=datetime.datetime.now())
     minimum_severity = serializers.ChoiceField(
         choices=SEVERITY_CHOICES,
         default='Info')
@@ -618,9 +618,7 @@ class ImportScanSerializer(TaggitSerializer, serializers.Serializer):
                                        test__test_type=test_type,
                                        active=True):
                 old_finding.active = False
-                old_finding.mitigated = datetime.datetime.combine(
-                    test.target_start,
-                    timezone.now().time())
+                old_finding.mitigated = test.target_start
                 old_finding.mitigated_by = self.context['request'].user
                 old_finding.notes.create(author=self.context['request'].user,
                                          entry="This finding has been automatically closed"
@@ -647,7 +645,7 @@ class ImportScanSerializer(TaggitSerializer, serializers.Serializer):
 
 
 class ReImportScanSerializer(TaggitSerializer, serializers.Serializer):
-    scan_date = serializers.DateField()
+    scan_date = serializers.DateTimeField()
     minimum_severity = serializers.ChoiceField(
         choices=SEVERITY_CHOICES,
         default='Info')
